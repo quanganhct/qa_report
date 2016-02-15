@@ -1,0 +1,10 @@
+\chapter{How I understand about Android development}
+
+Although Android use Java as its programming language, writing an Android application is more complicated than writing a Java one.
+
+\section{Activity and Fragment}
+
+\subsection{Activity}
+One of the most important component in Android is \textit{Activity}. An \textit{Activity} represent a screen in an application, and an instance of this kind of class is not initialized by user, infact, it is created by the Android's system, by injection via a file \textit{manifest.xml}. For that reason, transfer data between \textit{Activities} can't be done by the usual ways. Using static variable is no good neither, because each \textit{Activity} has their own life circle, when its life circle ends, the system will kill the \textit{Activity}, and garbage collector will free the memory zone which was hold by this \textit{Activity}, that makes all the static variables reset. 
+\subsection{Fragment}
+A \textit{Fragment} is a portion of an \textit{Activity}, it could be added or removed when an \textit{Activity} is active. A \textit{Fragment} also has its own life circle.

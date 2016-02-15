@@ -73,6 +73,9 @@
     \raggedleft%
     \hfill{\LARGE#1}\\
     \rule{\dimexpr\textwidth-\chapnumb\relax}{0.4pt}}}
+    
+\setlength{\parindent}{2em}
+\setlength{\parskip}{1em}
 %%% END Article customizations
 
 %%% The "real" document content comes below...
@@ -86,13 +89,14 @@
 \begin{document}
 \maketitle
 \include{abstract}
-\chapter{Introduction}
-\section{First section}
 
-Your text goes here.
+%%%chapter 1
+\include{introduction}
 
-\subsection{A subsection}
+%%%chapter 2
+\include{scrum}
 
-More text.
+%%%chapter 3
+\include{android_programming}
 
 \end{document}
