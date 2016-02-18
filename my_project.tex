@@ -124,3 +124,98 @@ First of all we need a function that check the condition of a set of receipt. If
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
+
+The next function is the main one that extract a list of groups of receipts from the sublists.
+
+\begin{algorithm}[H]
+\caption{}
+\begin{algorithmic}[1]
+\Function{Filter}{}
+\State $i=0, j=0, k=0$
+\State groups
+\State \underline{loop\_i}:
+\For{$i=0$ \textbf{to} $9$}
+	\State $a=b=c=0$
+	\While{$a < list_i.size$}
+	\State \underline{loop\_j}:
+	\For{$j=i$ \textbf{to} $9$}
+		\State $b=c=0$
+		\While{$b < list_j.size$}
+		\State \underline{loop\_k}:
+		\For{$k=j$ \textbf{to} $9$}
+			\State $c=0$
+			\While{$a < list_i.size \land b < list_j.size \land c < list_k.size$}
+				\If{$i=j$}
+					\If{$a=b$}
+						\If{$i+k \geq 9$}
+							\If{$j \neq k \lor a \neq c$}
+								\If{$\neg \Call{Check}{i,j,k,a,b,c,groups}$}
+									\State $c++$
+								\EndIf
+							\Else
+								\State $c++$
+							\EndIf
+						\Else
+							\State \textbf{goto} \underline{loop\_k}
+						\EndIf
+					\Else % a!=b AND i=j
+						\If{$k=j \land (c=a \lor c=b)$}
+							\If{$i+j \geq 9$}
+								\If{$\neg \Call{Check}{i,j,k,a,b,c,groups}$}
+									\State $c++$
+								\EndIf
+							\Else
+								\State \textbf{goto} \underline{loop\_k}
+							\EndIf						
+						\Else
+							\If{$\neg \Call{Check}{i,j,k,a,b,c,groups}$}
+								\State $c++$
+							\EndIf
+						\EndIf
+					\EndIf
+				\Else % i!=j break into page 2 here
+				\algstore{filterbreak}
+				\end{algorithmic}
+				\end{algorithm}
+				
+				\begin{algorithm}
+				\begin{algorithmic}
+				\algrestore{filterbreak}
+					\If{$j=k$}
+						\If{$b=c$}
+							\If{$\neg \Call{Check}{i,j,k,a,b,c,groups}$}
+								\State $c++$
+							\EndIf
+						\Else
+							\If{$i+j+k \geq 8$}
+								\If{$\neg \Call{Check}{i,j,k,a,b,c,groups}$}
+									\State $c++$
+								\EndIf
+							\Else
+								\State \textbf{goto} \underline{loop\_k}
+							\EndIf
+						\EndIf
+					\Else % j!=k
+						\If{$i+j+k \geq 8$}
+							\If{$\neg \Call{Check}{i,j,k,a,b,c,groups}$}
+								\State $c++$
+							\EndIf
+						\Else
+							\State \textbf{goto} \underline{loop\_k}
+						\EndIf
+					\EndIf
+				\EndIf
+			\EndWhile
+		\EndFor
+		\State $b++$
+		\EndWhile
+	\EndFor
+	\State $a++$
+
+	\EndWhile
+\EndFor
+\State \Return{groups}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
