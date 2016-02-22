@@ -20,8 +20,22 @@ Our job is to realize the idea of the ETRS project into mobile device.
 \subsection{BlinkID}
 BlinkID is a library allow scanning the passport of tourist. From the information we got from the scan, we can create account for the tourist, thus each person is associated with his/her passport. So even if a tourist lost his account, the refund process still could going on if he still keep his passport.
 
+The mechanic of the scanning is that it will read the \textbf{Machine Readable Zone} (MRZ). 
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.7]{passport_mrz}
+\caption{Passport with MRZ zone}
+\end{figure}
+
 \subsection{QR code}
-Each tourist, after registry their account, is given 1 QR code. In case that he don't want to show his passport, he could use this QR code to identify himself. Each merchant or shop would have their own QR code, and the tourist can scan their QR code for the ID of the shop.
+Each tourist, after registry their account, is given 1 QR code. In case that he don't want to show his passport, he could use this QR code to identify himself. Each merchant or shop would have their own QR code, and the tourist can scan their QR code for the ID of the shop. 
+
+In this project, I've implemented the scanning and generating QR code using a library, created by JourneyApps.
+\begin{itemize}
+	\item website: \href{http://journeyapps.com/}{http://journeyapps.com/}
+	\item github:\href{https://github.com/journeyapps/zxing-android-embedded}{ https://github.com/journeyapps/zxing-android-embedded}
+\end{itemize}
 
 \subsection{Android location service}
 Using this service, the application will notice the tourist if he's near one of the shop registry for the ETRS project. This service locates the user's position either by wifi or by GPS.
@@ -30,7 +44,7 @@ Using this service, the application will notice the tourist if he's near one of 
 This function allow the application to detect if the user is going in or out of the airport, thus allow to take correspondant behavior.
 
 \subsection{Push notification}
-This allows the server to notify users when there're change in their data, such as if their request to refund is realized, or refused. 
+This allows the server to notify users when there're changes in their data, such as if their request to refund is realized, or refused. 
 
 \subsection{Google Cloud Message (GCM)}
 The application allow user to define their events that need to be notified when the time come, for example the flight's time. Application will use GCM to notify the user when such time come.
@@ -40,6 +54,11 @@ The application allow user to share on their social network, such as Facebook, W
 
 \subsection{Map}
 Google Map service is intergrated into the application, thanks to the need of path finder. It's not very complicated, but then the problem rise. As Google Map can't be used inside China, we have to adopt another map service from China, Baidu map, and this process is extremely difficult, from the registration process to implementation process, since this service only work if you are in China, even fake GPS couldn't help.
+
+\subsection{Communication method between client and server}
+We mainly use RestAPI, since it's lightweight, and easy to implement. For security purpose, we generate for each user each times they login an \textbf{user-token}. Each time a client want to make a request, the user-token will be included into header of request. Beside, base on this user-token, we could identify user, and prevent the client from spamming request to server.
+
+The response is under form of \textbf{JSON} format. And since Google have greatly supported JSON, parsing a JSON response into Java model is plain easy.  
 
 
 \section{Algorithm utilized}
@@ -61,7 +80,7 @@ Divide the ordered list into many smaller lists :
 
 \begin{algorithm}[H]
 \caption{Split list of receipts into many sublists}
-\begin{algorithmic}
+\begin{algorithmic}[1]
 \Function{SplitList}{receipts}
 \State $j = 0, i = 0$
 \While{$i < \textit{receipts}.length$}
@@ -89,7 +108,7 @@ First of all we need a function that check the condition of a set of receipt. If
 
 \begin{algorithm}[H]
 \caption{Check if the correspondant receipts could form a group}
-\begin{algorithmic}
+\begin{algorithmic}[1]
 \Function{Check}{i, j, k, a, b, c, groups}
 
 \State $r_{a} = list_{i}[a]$
@@ -178,6 +197,8 @@ The next function is the main one that extract a list of groups of receipts from
 				\end{algorithmic}
 				\end{algorithm}
 				
+\clearpage
+
 				\begin{algorithm}
 				\begin{algorithmic}
 				\algrestore{filterbreak}
@@ -219,3 +240,11 @@ The next function is the main one that extract a list of groups of receipts from
 \end{algorithmic}
 \end{algorithm}
 
+
+At this stage we get a list which consists of :
+\begin{itemize}
+	\item receipts which are greater than 100
+	\item groups of receipts, maximum 3 receipts, which are greater than 100
+\end{itemize}
+
+Repeat for all lists of receipts of different merchant or shop, and we got the solution.

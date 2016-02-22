@@ -29,6 +29,7 @@
 \usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
 \usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
 \usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+\usepackage{hyperref}
 % These packages are all incorporated in the memoir class to one degree or another...
 
 %%% HEADERS & FOOTERS
@@ -88,7 +89,7 @@
 \def\BState{\State\hskip-\ALG@thistlm}
 \makeatother
 
-
+\graphicspath{ {imgs/} }
 %%% END Article customizations
 
 %%% The "real" document content comes below...
@@ -103,6 +104,8 @@
 \maketitle
 \include{abstract}
 
+\tableofcontents
+
 %%%chapter 1
 \include{introduction}
 
@@ -110,7 +113,7 @@
 \include{scrum}
 
 %%%chapter 3
-\include{android_programming}
+%\include{android_programming}
 
 %%%chapter 4
 \include{my_project}
