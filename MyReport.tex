@@ -90,21 +90,29 @@
 \makeatother
 
 \graphicspath{ {imgs/} }
+\usepackage[tc]{titlepic}
+
+%datetime
+\usepackage[UKenglish]{datetime}
+\newdateformat{mydate}{\monthname[\THEMONTH] \THEYEAR}
 %%% END Article customizations
 
 %%% The "real" document content comes below...
-
-\title{Brief Article}
-\author{NGUYEN Quang Anh}
+\begin{document}
+\include{title}
 
 %\date{} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
 
-\begin{document}
-\maketitle
-\include{abstract}
 
+
+\include{abstract}
+\newpage
+\newpage
 \tableofcontents
+\listoffigures
+
+\include{acknowledgement}
 
 %%%chapter 1
 \include{introduction}
@@ -117,5 +125,8 @@
 
 %%%chapter 4
 \include{my_project}
+
+\include{acquirement}
+\include{conclusion}
 
 \end{document}

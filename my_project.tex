@@ -22,11 +22,16 @@ BlinkID is a library allow scanning the passport of tourist. From the informatio
 
 The mechanic of the scanning is that it will read the \textbf{Machine Readable Zone} (MRZ). 
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.7]{passport_mrz}
 \caption{Passport with MRZ zone}
 \end{figure}
+
+Scanning passport included 2 tasks : get information from the MRZ zone, and take the cropped picture of the passport. Getting information from the MRZ zone is actually easy, since it's the main purpose of BlinkID, but to get the cropped picture of the passport, I have to work more. Luckily BlinkID have supported this feature too, but it's not as easy as the other one. I have to include a \textit{ImageListener} into the \textit{RecognizerView} (the camera container), once the images were captured, it would fire an event inside \textit{ImageListener}. But to use it, we had to link it with our main process. 
+
+Because the scanning function is not only in 1 screen, so to make the process of implementation more easier, I wrapped up the \textit{RecognizerView} and \textit{ImageListener} into one class, and every communication, including getting cropped image, must  go through this new class. That basically solved the problem. But then 1 more problem appear: the \textit{ImageListener} not always return the cropped image. Sometimes the scanning process happened too fast that it could only get the image of the MRZ zone of the passport. To resolved this, I make a \textit{Handler} that examine all taken images, if no desired image was taken when the scanning had done, repeat again. Once successfully capture the cropped image, I fired an event in my custom \textit{Listener} to notify the main thread. Then it would go to the next screen.
+
 
 \subsection{QR code}
 Each tourist, after registry their account, is given 1 QR code. In case that he don't want to show his passport, he could use this QR code to identify himself. Each merchant or shop would have their own QR code, and the tourist can scan their QR code for the ID of the shop. 
@@ -41,7 +46,7 @@ In this project, I've implemented the scanning and generating QR code using a li
 Using this service, the application will notice the tourist if he's near one of the shop registry for the ETRS project. This service locates the user's position either by wifi or by GPS.
 
 \subsection{Geofencing}
-This function allow the application to detect if the user is going in or out of the airport, thus allow to take correspondant behavior.
+Given coordinates of a location, and a radius, we could define a zone. Geofencing then notify if a target is getting in or out of this zone. We used this to detect if the user is going in or out of certain zones, thus allow us to take correspondant behavior.
 
 \subsection{Push notification}
 This allows the server to notify users when there're changes in their data, such as if their request to refund is realized, or refused. 
@@ -56,7 +61,7 @@ The application allow user to share on their social network, such as Facebook, W
 Google Map service is intergrated into the application, thanks to the need of path finder. It's not very complicated, but then the problem rise. As Google Map can't be used inside China, we have to adopt another map service from China, Baidu map, and this process is extremely difficult, from the registration process to implementation process, since this service only work if you are in China, even fake GPS couldn't help.
 
 \subsection{Communication method between client and server}
-We mainly use RestAPI, since it's lightweight, and easy to implement. For security purpose, we generate for each user each times they login an \textbf{user-token}. Each time a client want to make a request, the user-token will be included into header of request. Beside, base on this user-token, we could identify user, and prevent the client from spamming request to server.
+We mainly use RestAPI, since it's lightweight, and easy to implement. For security purpose, we generate for each user each times they login an \textbf{user-token}. Everytime a client want to make a request, the user-token will be included into header of request. Beside, base on this user-token, we could identify user, and prevent the client from spamming request to server.
 
 The response is under form of \textbf{JSON} format. And since Google have greatly supported JSON, parsing a JSON response into Java model is plain easy.  
 
@@ -248,3 +253,11 @@ At this stage we get a list which consists of :
 \end{itemize}
 
 Repeat for all lists of receipts of different merchant or shop, and we got the solution.
+
+\section{Database's synchronization}
+
+This application support offline usage, so that if there're no internet, user still could use some of its features. So I had to design a local database that help the application work when internet is out. But then, when internet is back, there would be conflicts between local database and server's database. That's why we have to synchronize between 2 databases. 
+
+To do that, client size will send a request, in which it attach the most recent update for each table. Server then search for records that have \textit{last\_update} greater than or equal the time sent by client, and send them back to client. Client will update it database local based on the reponse it received. 
+
+I also made a function that check for network available, and send the generated data during offline time to server. This process is done in the background, to prevent affectation on user's experience.These data would be marked with special status, to distinguish from other data. 
